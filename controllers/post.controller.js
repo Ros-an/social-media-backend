@@ -1,5 +1,12 @@
 exports.getPosts = (req, res) => {
-  res.send(
-    "Hello!! this is a node api for social media app with controller and route handler"
-  );
+  res.json({
+    post: [
+      {
+        post1: "my first post",
+      },
+      {
+        post2: "my second post",
+      },
+    ],
+  });
 };
