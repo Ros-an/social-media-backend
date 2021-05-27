@@ -1,14 +1,19 @@
 const Post = require("../models/post.model");
 
-const getPosts = (req, res) => {
-  res.json({
-    post: [
-      {
-        post1: "my first post",
-        post2: "my second post",
-      },
-    ],
-  });
+const getPosts = async (req, res) => {
+  try {
+    const posts = await Post.find().select("_id title body");
+    res.json({
+      success: true,
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "could not retrieve data",
+      errorMessage: err.message,
+    });
+  }
 };
 
 const createPost = async (req, res) => {
