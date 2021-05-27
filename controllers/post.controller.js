@@ -11,20 +11,22 @@ const getPosts = (req, res) => {
   });
 };
 
-const createPost = (req, res) => {
-  const post = new Post(req.body);
-  post.save((err, result) => {
-    if (err) {
-      res.status(400).json({
-        success: false,
-        message: err,
-      });
-    }
-    res.status(200).json({
+const createPost = async (req, res) => {
+  try {
+    const post = req.body;
+    const newPost = new Post(post);
+    const savedPost = await newPost.save();
+    res.status(201).json({
       success: true,
-      post,
+      post: savedPost,
     });
-  });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "post not added to database, see error message for more details",
+      erroMessage: err.message,
+    });
+  }
 };
 
 module.exports = { getPosts, createPost };

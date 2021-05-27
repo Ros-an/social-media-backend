@@ -1,6 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
+
 const app = express();
 dotenv.config();
 
@@ -10,10 +11,16 @@ initiateDbConnection();
 // bring in routes
 const postRoutes = require("./routes/post.route");
 
+const { errorHandler, routeNotFound } = require("./error-handler/index");
+
 // middleware
-app.use(express.json());
 app.use(morgan("dev"));
-app.use(postRoutes);
+app.use(express.json());
+app.use("/", postRoutes);
+
+// error handler middleware, which should be at last
+app.use(routeNotFound);
+app.use(errorHandler);
 
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
