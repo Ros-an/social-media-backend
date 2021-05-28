@@ -2,28 +2,26 @@ const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    trim: true,
-    required: "Enter your name.",
+const userSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      trim: true,
+      required: "Enter your name.",
+    },
+    email: {
+      type: String,
+      trim: true,
+      required: "Email is required",
+    },
+    hashed_password: {
+      type: String,
+      required: true,
+    },
+    salt: String,
   },
-  email: {
-    type: String,
-    trim: true,
-    required: "Email is required",
-  },
-  hashed_password: {
-    type: String,
-    required: true,
-  },
-  salt: String,
-  created: {
-    type: Date,
-    default: Date.now,
-  },
-  updated: Date,
-});
+  { timestamps: true }
+);
 
 // virtual field
 userSchema
