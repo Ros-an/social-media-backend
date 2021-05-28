@@ -1,8 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
-const { v4: uuid } = require("uuid");
-console.log(uuid());
+
 const app = express();
 dotenv.config();
 
