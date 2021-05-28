@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const morgan = require("morgan");
 const dotenv = require("dotenv");
 
@@ -18,6 +19,7 @@ const authRoutes = require("./routes/auth.route");
 // middleware
 app.use(morgan("dev"));
 app.use(express.json());
+app.use(cookieParser());
 app.use("/", postRoutes);
 app.use("/", authRoutes);
 

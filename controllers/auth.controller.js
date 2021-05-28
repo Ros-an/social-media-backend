@@ -1,3 +1,5 @@
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const User = require("../models/user.model");
 
 const signUp = async (req, res) => {
@@ -23,6 +25,15 @@ const signUp = async (req, res) => {
       errorMessage: err.message,
     });
   }
+};
+
+const signin = async (req, res) => {
+  // find the user based on email
+  //If error or no user - do something else
+  // If user found - authenticate(password match)
+  // Correct email and password - generate token with secret and userid
+  // persist the token as "t" in cookie with expiry date
+  // return response with user and token to FE client
 };
 
 module.exports = { signUp };
