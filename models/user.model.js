@@ -2,17 +2,24 @@ const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
 const crypto = require("crypto");
 
+function validateEmail(email) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+}
+
 const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
       trim: true,
       required: "Enter your name.",
+      minlength: 3,
     },
     email: {
       type: String,
       trim: true,
       required: "Email is required",
+      validate: [validateEmail, "Please fill a valid email address"],
     },
     hashed_password: {
       type: String,
