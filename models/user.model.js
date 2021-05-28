@@ -21,17 +21,9 @@ const userSchema = new mongoose.Schema({
   created: {
     type: Date,
     default: Date.now,
-    // `Date.now()` returns the current unix timestamp as a number, in js we use (), not in mongoose
   },
   updated: Date,
 });
-
-/**
- * Virtual fields: are additional field for a given model
- * Their values can be set manually or automatically with defined functionality
- * Keep in mind: virtual properties(password from user) don't get persisted in the database
- * They only exist logically(password) and are not written to the document's collection
- */
 
 // virtual field
 userSchema
@@ -50,7 +42,6 @@ userSchema
 
 // methods
 userSchema.methods = {
-  // this method is for registration- when user access for the first time, so we encrypt and save it, now when user enter for 2nd time, he will use plain text, then we have to use diff method to match with our hashed password
   encryptPassword: function (password) {
     if (!password) return "";
     try {
