@@ -49,12 +49,10 @@ const signIn = async (req, res) => {
       });
     }
     // Correct email and password - generate token with secret and userid
-    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: 86400, // expires in 24 hours
-    });
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET);
 
     // persist the token as "t" in cookie with expiry date
-    // res.cookie("t", token, { expire: new Date() + 86400 });
+    res.cookie("t", token, { expire: new Date() + 86400 });
 
     // return response with user and token to FE client
     return res.json({
@@ -75,4 +73,17 @@ const signIn = async (req, res) => {
   }
 };
 
-module.exports = { signUp, signIn };
+const signOut = (req, res) => {
+  res.clearCookie("t");
+  return res.json({
+    success: true,
+    message: "Signout Successful!",
+  });
+};
+// const requireSignin = expressJwt({
+//   secret: process.env.JWT_SECRET,
+//   algorithms: ["HS256"], // added later
+//   userProperty: "auth",
+// });
+
+module.exports = { signUp, signIn, signOut };
