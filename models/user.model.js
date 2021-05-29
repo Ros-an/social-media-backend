@@ -47,6 +47,10 @@ userSchema
 
 // methods
 userSchema.methods = {
+  authenticate: function (plainText) {
+    return this.encryptPassword(PlainText) === this.hashed_password;
+  },
+
   encryptPassword: function (password) {
     if (!password) return "";
     try {

@@ -27,13 +27,48 @@ const signUp = async (req, res) => {
   }
 };
 
-const signin = async (req, res) => {
+const signIn = async (req, res) => {
   // find the user based on email
-  //If error or no user - do something else
-  // If user found - authenticate(password match)
-  // Correct email and password - generate token with secret and userid
-  // persist the token as "t" in cookie with expiry date
-  // return response with user and token to FE client
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email }).select("_id email name");
+    console.log(user);
+
+    //If error or no user - do something else
+    if (!user) {
+      return res.status(403).json({
+        success: false,
+        message: `User with ${email} does not exist. Please SignUp`,
+      });
+    }
+    // If user found - authenticate(password don't match)
+    if (!user.authenticate(password)) {
+      return res.status(401).json({
+        success: false,
+        message: "Email and password do not match.",
+      });
+    }
+    // Correct email and password - generate token with secret and userid
+    const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: 86400, // expires in 24 hours
+    });
+
+    // persist the token as "t" in cookie with expiry date
+    // res.cookie("t", token, { expire: new Date() + 86400 });
+
+    // return response with user and token to FE client
+    return res.json({
+      success: true,
+      token,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: `something went wrong, see error message for more details`,
+      errorMessage: err.message,
+    });
+  }
 };
 
-module.exports = { signUp };
+module.exports = { signUp, signIn };
