@@ -31,7 +31,7 @@ const signIn = async (req, res) => {
   // find the user based on email
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({ email }).select("_id email name");
+    const user = await User.findOne({ email });
     console.log(user);
 
     //If error or no user - do something else
@@ -60,7 +60,11 @@ const signIn = async (req, res) => {
     return res.json({
       success: true,
       token,
-      user,
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+      },
     });
   } catch (err) {
     res.status(500).json({
