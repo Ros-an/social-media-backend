@@ -13,6 +13,18 @@ function routeNotFound(req, res, next) {
     success: false,
     message: "the route you are looking for could not be found!",
   });
+  next();
 }
 
-module.exports = { errorHandler, routeNotFound };
+function unauthorised(err, req, res, next) {
+  if (err.name === "UnauthorizedError") {
+    res.status(401).json({
+      success: false,
+      message: "Unauthorised User!",
+      errorMessage: err.message,
+    });
+  }
+  next();
+}
+
+module.exports = { errorHandler, routeNotFound, unauthorised };

@@ -6,7 +6,11 @@ const dotenv = require("dotenv");
 const app = express();
 dotenv.config();
 
-const { errorHandler, routeNotFound } = require("./error-handler/index");
+const {
+  errorHandler,
+  routeNotFound,
+  unauthorised,
+} = require("./error-handler/index");
 
 // DB connection
 const { initiateDbConnection } = require("./db/database-connection");
@@ -22,6 +26,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/", postRoutes);
 app.use("/", authRoutes);
+
+// unauthorised user error handler middleware
+app.use(unauthorised);
 
 // error handler middleware, which should be at last
 app.use(routeNotFound);
