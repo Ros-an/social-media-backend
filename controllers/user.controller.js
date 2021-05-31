@@ -58,6 +58,25 @@ exports.updateUser = async (req, res) => {
     });
   }
 };
+
+exports.deleteUser = async (req, res) => {
+  try {
+    let user = req.profile;
+    let deletedUser = await user.remove();
+    deletedUser.hashed_password = undefined;
+    deletedUser.salt = undefined;
+    res.json({
+      success: true,
+      message: "Your account has been deleted successfully!",
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "user not deleted, for more check the error message",
+      errorMessage: err.message,
+    });
+  }
+};
 exports.userById = async (req, res, next, id) => {
   try {
     const user = await User.findById(id);
