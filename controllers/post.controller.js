@@ -4,7 +4,9 @@ const fs = require("fs");
 
 const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find().select("_id title body");
+    const posts = await Post.find()
+      .populate("postedBy", "_id name")
+      .select("_id title body");
     res.json({
       success: true,
       posts,
