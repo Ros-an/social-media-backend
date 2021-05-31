@@ -16,6 +16,24 @@ exports.allUsers = async (req, res) => {
   }
 };
 
+exports.singleUser = async (req, res) => {
+  try {
+    const user = req.profile;
+    user.salt = undefined;
+    user.hashed_password = undefined;
+    res.status(200).json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message:
+        "Error while retrieving data, refer to error message for more details",
+      errorMessage: err.message,
+    });
+  }
+};
 exports.userById = async (req, res, next, id) => {
   try {
     const user = await User.findById(id);
