@@ -25,7 +25,7 @@ const createPost = async (req, res, next) => {
   form.keepExtensions = true;
   form.parse(req, async (err, fields, files) => {
     if (err) {
-      return res.status(400).json({
+      return res.status(500).json({
         success: false,
         message: "Image could not be uploaded.",
         errorMessage: err.message,
@@ -51,7 +51,7 @@ const createPost = async (req, res, next) => {
         result,
       });
     } catch (err) {
-      res.status(400).json({
+      res.status(500).json({
         success: false,
         message:
           "post not added to database, see error message for more details",
@@ -61,4 +61,21 @@ const createPost = async (req, res, next) => {
   });
 };
 
-module.exports = { getPosts, createPost };
+const postsByUser = async (req, res) => {
+  try {
+    const posts = await Post.find({ postedBy: req.profile._id })
+      .populate("postedBy", "_id name")
+      .sort("createdAt");
+    res.json({
+      success: true,
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "could not retrieve post",
+      errorMessage: err.message,
+    });
+  }
+};
+module.exports = { getPosts, createPost, postsByUser };
