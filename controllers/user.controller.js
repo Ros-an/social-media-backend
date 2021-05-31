@@ -1,3 +1,4 @@
+const _ = require("lodash");
 const User = require("../models/user.model");
 
 exports.allUsers = async (req, res) => {
@@ -30,6 +31,29 @@ exports.singleUser = async (req, res) => {
       success: false,
       message:
         "Error while retrieving data, refer to error message for more details",
+      errorMessage: err.message,
+    });
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    console.log(req.profile);
+    console.log(req.body);
+    let user = req.profile;
+    const updatedUser = req.body;
+    user = _.extend(user, updatedUser);
+    await user.save();
+    user.hashed_password = undefined;
+    user.salt = undefined;
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      error: "Error during update, for more check error  message",
       errorMessage: err.message,
     });
   }
