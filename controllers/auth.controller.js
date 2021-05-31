@@ -82,9 +82,11 @@ const signOut = (req, res) => {
   });
 };
 const requireSignin = expressJwt({
+  // if the token is valid, then express-jwt appends verified user id in an auth key to the request object
   secret: process.env.JWT_SECRET,
   algorithms: ["HS256"], // added later
-  // userProperty: "auth",
+  // creating a prop userproperty, with this we can access the auth id to check the currently signed  in used id
+  userProperty: "auth",
 });
 
 module.exports = { signUp, signIn, signOut, requireSignin };

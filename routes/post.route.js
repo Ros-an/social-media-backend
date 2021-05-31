@@ -6,8 +6,8 @@ const { requireSignin } = require("../controllers/auth.controller");
 const { userById } = require("../controllers/user.controller");
 
 // using requireSignIn as middleware
-router.get("/", requireSignin, getPosts);
-router.post("/post", createPost);
+router.get("/", getPosts);
+router.post("/post", requireSignin, createPost);
 
 router.param("userId", userById);
 
