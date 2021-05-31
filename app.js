@@ -19,6 +19,7 @@ initiateDbConnection();
 // bring in routes
 const postRoutes = require("./routes/post.route");
 const authRoutes = require("./routes/auth.route");
+const userRoutes = require("./routes/user.route");
 
 // middleware
 app.use(morgan("dev"));
@@ -26,6 +27,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/", postRoutes);
 app.use("/", authRoutes);
+app.use("/", userRoutes);
 
 // unauthorised user error handler middleware
 app.use(unauthorised);

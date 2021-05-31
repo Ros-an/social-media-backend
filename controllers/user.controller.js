@@ -1,5 +1,21 @@
 const User = require("../models/user.model");
 
+exports.allUsers = async (req, res) => {
+  try {
+    const users = await User.find().select("name email createdAt updatedAt");
+    res.json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "could not retrieve users, for more details see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+
 exports.userById = async (req, res, next, id) => {
   try {
     const user = await User.findById(id);
