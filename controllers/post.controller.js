@@ -78,4 +78,24 @@ const postsByUser = async (req, res) => {
     });
   }
 };
-module.exports = { getPosts, createPost, postsByUser };
+
+const postById = async (req, res, next, id) => {
+  try {
+    const post = await Post.findById(id).populate("postedBy", "_id name");
+    if (!post) {
+      return res.status(400).json({
+        success: false,
+        message: "no such post found",
+      });
+    }
+    req.post = post;
+    next();
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error while retrieving , for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+module.exports = { getPosts, createPost, postsByUser, postById };
