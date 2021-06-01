@@ -1,6 +1,7 @@
 const _ = require("lodash");
 const User = require("../models/user.model");
 
+// logic to get all users
 exports.allUsers = async (req, res) => {
   try {
     const users = await User.find().select("name email createdAt updatedAt");
@@ -16,7 +17,7 @@ exports.allUsers = async (req, res) => {
     });
   }
 };
-
+// logic for single user
 exports.singleUser = async (req, res) => {
   try {
     const user = req.profile;
@@ -36,6 +37,7 @@ exports.singleUser = async (req, res) => {
   }
 };
 
+// logic of updating user's detail
 exports.updateUser = async (req, res) => {
   try {
     let user = req.profile;
@@ -58,6 +60,7 @@ exports.updateUser = async (req, res) => {
   }
 };
 
+// logic of deleting user account
 exports.deleteUser = async (req, res) => {
   try {
     let user = req.profile;
@@ -74,6 +77,8 @@ exports.deleteUser = async (req, res) => {
     });
   }
 };
+
+// logic of router param of finding user by id
 exports.userById = async (req, res, next, id) => {
   try {
     const user = await User.findById(id);
