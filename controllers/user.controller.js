@@ -38,14 +38,13 @@ exports.singleUser = async (req, res) => {
 
 exports.updateUser = async (req, res) => {
   try {
-    console.log(req.profile);
-    console.log(req.body);
     let user = req.profile;
     const updatedUser = req.body;
     user = _.extend(user, updatedUser);
     await user.save();
     user.hashed_password = undefined;
     user.salt = undefined;
+    console.log("user", user);
     res.json({
       success: true,
       user,
@@ -62,9 +61,7 @@ exports.updateUser = async (req, res) => {
 exports.deleteUser = async (req, res) => {
   try {
     let user = req.profile;
-    let deletedUser = await user.remove();
-    deletedUser.hashed_password = undefined;
-    deletedUser.salt = undefined;
+    await user.remove();
     res.json({
       success: true,
       message: "Your account has been deleted successfully!",
