@@ -1,4 +1,5 @@
 const Post = require("../models/post.model");
+const _ = require("lodash");
 const formidable = require("formidable");
 const fs = require("fs");
 
@@ -116,6 +117,26 @@ const postsByUser = async (req, res) => {
     });
   }
 };
+// function to update post
+const updatePost = async (req, res) => {
+  try {
+    let post = req.post;
+    const updatedPost = req.body;
+    post = _.extend(post, updatedPost);
+    await post.save();
+    console.log("hya update", post);
+    res.json({
+      success: true,
+      post,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "post could not be updated, for detail see error message",
+      errorMessage: err.message,
+    });
+  }
+};
 
 // function to delete post
 const deletePost = async (req, res) => {
@@ -140,5 +161,6 @@ module.exports = {
   postsByUser,
   postById,
   isPostOfUser,
+  updatePost,
   deletePost,
 };
