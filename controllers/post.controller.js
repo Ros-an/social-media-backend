@@ -2,6 +2,42 @@ const Post = require("../models/post.model");
 const formidable = require("formidable");
 const fs = require("fs");
 
+// gets post by id
+const postById = async (req, res, next, id) => {
+  try {
+    const post = await Post.findById(id).populate("postedBy", "_id name");
+    if (!post) {
+      return res.status(400).json({
+        success: false,
+        message: "no such post found",
+      });
+    }
+    req.post = post;
+    next();
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "Error while retrieving , for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+
+// middleware - to check authorization to make sure user delete/update only its own post
+const isPostOfUser = (req, res, next) => {
+  let userPost = req.post && req.auth && req.post.postedBy._id == req.auth._id;
+  console.log("req.post", typeof req.post._id);
+  console.log("req.auth", typeof req.auth._id);
+  if (!userPost) {
+    return res.status(403).json({
+      success: false,
+      messsage: "User is not authorized!",
+    });
+  }
+  next();
+};
+
+// function to get all the posts
 const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
@@ -20,6 +56,7 @@ const getPosts = async (req, res) => {
   }
 };
 
+// function to create post
 const createPost = async (req, res, next) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
@@ -61,6 +98,7 @@ const createPost = async (req, res, next) => {
   });
 };
 
+// funtion to find post of a user
 const postsByUser = async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: req.profile._id })
@@ -79,23 +117,28 @@ const postsByUser = async (req, res) => {
   }
 };
 
-const postById = async (req, res, next, id) => {
+// function to delete post
+const deletePost = async (req, res) => {
   try {
-    const post = await Post.findById(id).populate("postedBy", "_id name");
-    if (!post) {
-      return res.status(400).json({
-        success: false,
-        message: "no such post found",
-      });
-    }
-    req.post = post;
-    next();
+    let post = req.post;
+    await post.remove();
+    res.json({
+      success: true,
+      message: "Your post has been deleted successfully!",
+    });
   } catch (err) {
     res.status(500).json({
       success: false,
-      message: "Error while retrieving , for more see error message",
+      message: "could not delete post, for more see error message",
       errorMessage: err.message,
     });
   }
 };
-module.exports = { getPosts, createPost, postsByUser, postById };
+module.exports = {
+  getPosts,
+  createPost,
+  postsByUser,
+  postById,
+  isPostOfUser,
+  deletePost,
+};
