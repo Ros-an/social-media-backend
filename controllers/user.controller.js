@@ -90,7 +90,7 @@ exports.userById = async (req, res, next, id) => {
     req.profile = user;
     next();
   } catch (err) {
-    res.status(400).json({
+    res.status(500).json({
       success: false,
       message: "Error while retrieving user, for more detail see error message",
       errorMessage: err.Message,
