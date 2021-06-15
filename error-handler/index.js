@@ -16,6 +16,7 @@ function routeNotFound(req, res, next) {
   next();
 }
 
+// when the token is invalid from the user end
 function unauthorised(err, req, res, next) {
   if (err.name === "UnauthorizedError") {
     res.status(401).json({
