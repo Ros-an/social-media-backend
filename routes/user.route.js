@@ -7,6 +7,9 @@ const {
   singleUser,
   updateUser,
   deleteUser,
+  userPhoto,
+  userDataForEdit,
+  backgroundImage,
 } = require("../controllers/user.controller");
 const {
   requireSignin,
@@ -15,6 +18,9 @@ const {
 
 router.get("/users", allUsers);
 router.get("/user/:userId", requireSignin, singleUser);
+router.get("/user/edit/:userId", requireSignin, userDataForEdit);
+router.get("/user/photo/:userId", userPhoto);
+router.get("/user/background/:userId", backgroundImage);
 router.post("/user/:userId", requireSignin, hasAuthorization, updateUser);
 router.delete("/user/:userId", requireSignin, hasAuthorization, deleteUser);
 
