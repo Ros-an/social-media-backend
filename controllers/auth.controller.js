@@ -39,14 +39,14 @@ const signIn = async (req, res) => {
     if (!user) {
       return res.status(403).json({
         success: false,
-        message: `User with ${email} does not exist. Please SignUp`,
+        message: `User with ${email} does not exist. Please SignUp first!`,
       });
     }
     // If user found - authenticate(password don't match)
     if (!user.authenticate(password)) {
       return res.status(401).json({
         success: false,
-        message: "Email and password do not match.",
+        message: "password do not match.",
       });
     }
     // Correct email and password - generate token with secret and userid
@@ -84,8 +84,8 @@ const signOut = (req, res) => {
 const requireSignin = expressJwt({
   // if the token is valid, then express-jwt appends verified user id in an auth key to the request object
   secret: process.env.JWT_SECRET,
-  algorithms: ["HS256"], // added later
-  // creating a prop userproperty, with this we can access the auth id to check the currently signed  in used id
+  algorithms: ["HS256"],
+  // creating a prop userproperty, with this we can access the auth id to check the currently signedin user id
   userProperty: "auth",
 });
 
