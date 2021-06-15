@@ -1,7 +1,7 @@
 const Post = require("../models/post.model");
-const _ = require("lodash");
 const formidable = require("formidable");
 const fs = require("fs");
+const _ = require("lodash");
 
 // gets post by id
 const postById = async (req, res, next, id) => {
@@ -62,8 +62,11 @@ const createPost = async (req, res, next) => {
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.parse(req, async (err, fields, files) => {
+    // console.log("This is field", fields);
+    // console.log("This is file", files);
+
     if (err) {
-      return res.status(500).json({
+      return res.status(400).json({
         success: false,
         message: "Image could not be uploaded.",
         errorMessage: err.message,
@@ -72,12 +75,19 @@ const createPost = async (req, res, next) => {
     // these fields are columns/attributes(sql) in table/collection
     let post = new Post(fields);
     const user = req.profile;
+    // console.log("This is user", user);
+    // console.log("This is post", post);
+
     user.hashed_password = undefined;
     user.salt = undefined;
     user.createdAt = undefined;
     user.updatedAt = undefined;
     user.__v = undefined;
+    // console.log("This is user 2", user);
+
     post.postedBy = user;
+    // console.log("This is post", post);
+
     if (files.photo) {
       post.photo.data = fs.readFileSync(files.photo.path);
       post.photo.contentType = files.photo.type;
