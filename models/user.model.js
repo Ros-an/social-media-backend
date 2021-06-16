@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { v4: uuid } = require("uuid");
+const { ObjectId } = mongoose.Schema;
 const crypto = require("crypto");
 
 const userSchema = new mongoose.Schema(
@@ -33,6 +34,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    following: [{ type: ObjectId, ref: "User" }],
+    followers: [{ type: ObjectId, ref: "User" }],
   },
   { timestamps: true }
 );
