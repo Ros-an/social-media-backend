@@ -7,7 +7,7 @@ const User = require("../models/user.model");
 exports.allUsers = async (req, res) => {
   try {
     const users = await User.find().select(
-      "name email userphoto createdAt updatedAt"
+      "name email userphoto about createdAt updatedAt"
     );
     res.json({
       success: true,
@@ -172,7 +172,9 @@ exports.deleteUser = async (req, res) => {
 // logic of router param of finding user by id
 exports.userById = async (req, res, next, id) => {
   try {
-    const user = await User.findById(id);
+    const user = await User.findById(id)
+      .populate("following", "_id name")
+      .populate("followers", "_id name");
     if (!user) {
       return res.status(400).json({
         success: false,
