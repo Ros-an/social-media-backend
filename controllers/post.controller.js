@@ -83,6 +83,11 @@ const createPost = async (req, res, next) => {
     user.createdAt = undefined;
     user.updatedAt = undefined;
     user.__v = undefined;
+    user.background = undefined;
+    user.userphoto = undefined;
+    user.about = undefined;
+    user.following = undefined;
+    user.followers = undefined;
     // console.log("This is user 2", user);
 
     post.postedBy = user;
