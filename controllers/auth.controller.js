@@ -33,7 +33,6 @@ const signIn = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    console.log(user);
 
     //If error or no user - do something else
     if (!user) {
