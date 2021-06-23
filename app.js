@@ -38,7 +38,7 @@ app.use(unauthorised);
 app.use(routeNotFound);
 app.use(errorHandler);
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log("server connected");
 });
