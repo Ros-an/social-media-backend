@@ -1,5 +1,4 @@
 function errorHandler(err, req, res, next) {
-  console.log(err.stack);
   res.status(500).json({
     success: false,
     message: "Error occurred, check the error message for more details",
