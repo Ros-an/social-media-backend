@@ -9,12 +9,17 @@ const {
   isPostOfUser,
   updatePost,
   deletePost,
+  postImage,
+  singlePost
 } = require("../controllers/post.controller");
 const { requireSignin } = require("../controllers/auth.controller");
 const { userById } = require("../controllers/user.controller");
 
 // using requireSignIn and isPostOfUser as middleware
 router.get("/posts", getPosts);
+router.get("/post/:postId", singlePost);
+router.get("/post/photo/:postId", postImage);
+
 router.post("/post/new/:userId", requireSignin, createPost);
 router.get("/posts/by_user/:userId", requireSignin, postsByUser);
 router.delete("/post/:postId", requireSignin, isPostOfUser, deletePost);

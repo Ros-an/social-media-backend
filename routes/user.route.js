@@ -10,12 +10,23 @@ const {
   userPhoto,
   userDataForEdit,
   backgroundImage,
+  addToFollowing,
+  addToFollowers,
+  removeFromFollowers,
+  removeFromFollowing,
 } = require("../controllers/user.controller");
 const {
   requireSignin,
   hasAuthorization,
 } = require("../controllers/auth.controller");
 
+router.post("/user/follow", requireSignin, addToFollowing, addToFollowers);
+router.post(
+  "/user/unfollow",
+  requireSignin,
+  removeFromFollowing,
+  removeFromFollowers
+);
 router.get("/users", allUsers);
 router.get("/user/:userId", requireSignin, singleUser);
 router.get("/user/edit/:userId", requireSignin, userDataForEdit);
