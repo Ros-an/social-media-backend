@@ -6,9 +6,9 @@ const User = require("../models/user.model");
 // logic to get all users
 exports.allUsers = async (req, res) => {
   try {
-    const users = await User.find().select(
-      "name email userphoto about createdAt updatedAt"
-    );
+    const users = await User.find()
+      .select("name email userphoto about followers createdAt updatedAt")
+      .populate("followers", "_id");
     res.json({
       success: true,
       users,
@@ -109,6 +109,8 @@ exports.backgroundImage = (req, res, next) => {
 //   }
 // };
 exports.updateUser = async (req, res, next) => {
+  // console.log("This is req body", req.profile);
+
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.parse(req, async (err, fields, files) => {
@@ -132,15 +134,20 @@ exports.updateUser = async (req, res, next) => {
     }
     try {
       let result = await user.save();
-      // result.hashed_password = undefined;
-      // result.salt = undefined;
-      // result.createdAt = undefined;
-      // result.updatedAt = undefined;
-      // result.__v = undefined;
-      console.log("ye le result", result);
+      result.hashed_password = undefined;
+      result.salt = undefined;
+      result.createdAt = undefined;
+      result.updatedAt = undefined;
+      result.__v = undefined;
+      result.userphoto = undefined;
+      result.background = undefined;
+      result.about = undefined;
+      result.following = undefined;
+      result.followers = undefined;
+
       res.json({
         success: true,
-        message: "user detail has been updated",
+        result,
       });
     } catch (err) {
       res.json({
@@ -189,6 +196,84 @@ exports.userById = async (req, res, next, id) => {
       success: false,
       message: "Error while retrieving user, for more detail see error message",
       errorMessage: err.Message,
+    });
+  }
+};
+
+// add follow and following
+exports.addToFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $push: { following: req.body.followId },
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      message: "something wrong with updation",
+      errorMessage: err.Message,
+    });
+  }
+  next();
+};
+
+exports.addToFollowers = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.body.followId,
+      { $push: { followers: req.body.userId } },
+      { new: true }
+    )
+      .populate("following", "_id, name")
+      .populate("followers", "_id, name");
+    user.hashed_password = undefined;
+    user.salt = undefined;
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem while updating, for more detail see errMessage",
+      errorMessage: err.message,
+    });
+  }
+};
+// remove follow and following
+exports.removeFromFollowing = async (req, res, next) => {
+  try {
+    await User.findByIdAndUpdate(req.body.userId, {
+      $pull: { following: req.body.unFollowId },
+    });
+  } catch (err) {
+    return res.status(400).json({
+      success: false,
+      errorMessage: err.Message,
+    });
+  }
+  next();
+};
+
+exports.removeFromFollowers = async (req, res) => {
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.body.unFollowId,
+      { $pull: { followers: req.body.userId } },
+      { new: true }
+    )
+      .populate("following", "_id, name")
+      .populate("followers", "_id, name");
+    user.hashed_password = undefined;
+    user.salt = undefined;
+    res.json({
+      success: true,
+      user,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem while updating, for more detail see errMessage",
+      errorMessage: err.message,
     });
   }
 };
