@@ -7,7 +7,7 @@ const User = require("../models/user.model");
 exports.allUsers = async (req, res) => {
   try {
     const users = await User.find()
-      .select("name email userphoto about followers createdAt updatedAt")
+      .select("name email about followers createdAt updatedAt")
       .populate("followers", "_id");
     res.json({
       success: true,
@@ -27,6 +27,8 @@ exports.singleUser = async (req, res) => {
     const user = req.profile;
     user.salt = undefined;
     user.hashed_password = undefined;
+    user.userphoto = undefined;
+    user.background = undefined;
     res.status(200).json({
       success: true,
       user,
