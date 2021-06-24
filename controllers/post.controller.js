@@ -3,6 +3,24 @@ const formidable = require("formidable");
 const fs = require("fs");
 const _ = require("lodash");
 
+// function to get all the posts
+const getPosts = async (req, res) => {
+  try {
+    const posts = await Post.find()
+      .populate("postedBy", "_id name")
+      .select("_id post postphoto createdAt likes");
+    res.json({
+      success: true,
+      posts,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: "could not retrieve data",
+      errorMessage: err.message,
+    });
+  }
+};
 // gets post by id
 const postById = async (req, res, next, id) => {
   try {
@@ -53,25 +71,6 @@ const isPostOfUser = (req, res, next) => {
     });
   }
   next();
-};
-
-// function to get all the posts
-const getPosts = async (req, res) => {
-  try {
-    const posts = await Post.find()
-      .populate("postedBy", "_id name userphoto")
-      .select("_id post postphoto createdAt").sort("updatedAt");
-    res.json({
-      success: true,
-      posts,
-    });
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      message: "could not retrieve data",
-      errorMessage: err.message,
-    });
-  }
 };
 
 // function to create post
@@ -133,6 +132,7 @@ const postsByUser = async (req, res) => {
   try {
     const posts = await Post.find({ postedBy: req.profile._id })
       .populate("postedBy", "_id name")
+      .select("_id post createdAt")
       .sort("createdAt");
     res.json({
       success: true,
@@ -167,7 +167,6 @@ const postsByUser = async (req, res) => {
 //   }
 // };
 const updatePost = async (req, res, next) => {
-
   let form = new formidable.IncomingForm();
   form.keepExtensions = true;
   form.parse(req, async (err, fields, files) => {
@@ -189,7 +188,7 @@ const updatePost = async (req, res, next) => {
       let result = await post.save();
       res.json({
         success: true,
-        message: "post updation successful!"
+        message: "post updation successful!",
       });
     } catch (err) {
       res.json({
@@ -225,6 +224,47 @@ const postImage = (req, res, next) => {
   }
   next();
 };
+
+// like and unlike logic
+const like = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $push: { likes: req.body.userId } },
+      { new: true }
+    ).populate("postedBy", "_id name");
+    res.json({
+      success: true,
+      post,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem occurred during updation, for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+const unlike = async (req, res) => {
+  try {
+    const post = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { likes: req.body.userId } },
+      { new: true }
+    ).populate("postedBy", "_id name");
+    res.json({
+      success: true,
+      post,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem occurred during updation, for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+
 module.exports = {
   getPosts,
   singlePost,
@@ -235,4 +275,6 @@ module.exports = {
   updatePost,
   deletePost,
   postImage,
+  like,
+  unlike,
 };
