@@ -2,6 +2,7 @@ const formidable = require("formidable");
 const fs = require("fs");
 const _ = require("lodash");
 const User = require("../models/user.model");
+const Post = require("../models/post.model");
 
 // logic to get all users
 exports.allUsers = async (req, res) => {
@@ -169,6 +170,7 @@ exports.deleteUser = async (req, res) => {
       success: true,
       message: "Your account has been deleted successfully!",
     });
+    await Post.deleteMany({ postedBy: req.profile._id });
   } catch (err) {
     res.status(400).json({
       success: false,
