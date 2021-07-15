@@ -2,12 +2,6 @@ const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Schema;
 const postSchema = new mongoose.Schema(
   {
-    // title: {
-    //   type: String,
-    //   required: "Title is required",
-    //   minlength: 4,
-    //   maxlength: 150,
-    // },
     post: {
       type: String,
       required: "post body is required",
@@ -22,6 +16,13 @@ const postSchema = new mongoose.Schema(
       ref: "User", //referring to model User
     },
     likes: [{ type: ObjectId, ref: "User" }],
+    comments: [
+      {
+        text: String,
+        created: { type: Date, default: Date.now },
+        commentBy: { type: ObjectId, ref: "User" },
+      },
+    ],
   },
   { timestamps: true }
 );

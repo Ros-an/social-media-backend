@@ -8,7 +8,9 @@ const getPosts = async (req, res) => {
   try {
     const posts = await Post.find()
       .populate("postedBy", "_id name")
-      .select("_id post postphoto createdAt likes");
+      .populate("comments", "text created")
+      .populate("comments.commentBy", "_id name")
+      .select("_id post postphoto comments createdAt likes");
     res.json({
       success: true,
       posts,
@@ -24,7 +26,10 @@ const getPosts = async (req, res) => {
 // gets post by id
 const postById = async (req, res, next, id) => {
   try {
-    const post = await Post.findById(id).populate("postedBy", "_id name");
+    const post = await Post.findById(id)
+      .populate("postedBy", "_id name")
+      .populate("comments", "text created")
+      .populate("comments.commentBy", "_id name");
     if (!post) {
       return res.status(400).json({
         success: false,
@@ -264,7 +269,51 @@ const unlike = async (req, res) => {
     });
   }
 };
-
+const comment = async (req, res) => {
+  let comment = req.body.comment;
+  comment.commentBy = req.body.userId;
+  try {
+    comment = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $push: { comments: comment } },
+      { new: true }
+    )
+      .populate("comments.commentBy", "_id name")
+      .populate("postedBy", "_id name");
+    res.json({
+      success: true,
+      comment,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem occurred during updation, for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
+const uncomment = async (req, res) => {
+  let comment = req.body.comment;
+  try {
+    comment = await Post.findByIdAndUpdate(
+      req.body.postId,
+      { $pull: { comments: { _id: comment._id } } },
+      { new: true }
+    )
+      .populate("comments.commentBy", "_id name")
+      .populate("postedBy", "_id name");
+    res.json({
+      success: true,
+      comment,
+    });
+  } catch (err) {
+    res.status(400).json({
+      success: false,
+      message: "problem occurred during updation, for more see error message",
+      errorMessage: err.message,
+    });
+  }
+};
 module.exports = {
   getPosts,
   singlePost,
@@ -277,4 +326,6 @@ module.exports = {
   postImage,
   like,
   unlike,
+  comment,
+  uncomment,
 };

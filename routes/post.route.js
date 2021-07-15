@@ -13,13 +13,20 @@ const {
   singlePost,
   like,
   unlike,
+  comment,
+  uncomment,
 } = require("../controllers/post.controller");
 const { requireSignin } = require("../controllers/auth.controller");
 const { userById } = require("../controllers/user.controller");
 
+// comment and delete comment
+router.post("/post/comment", requireSignin, comment);
+router.post("/post/uncomment", requireSignin, uncomment);
+
 // like and unlike route
 router.post("/post/like", requireSignin, like);
 router.post("/post/unlike", requireSignin, unlike);
+
 // using requireSignIn and isPostOfUser as middleware
 router.get("/posts", getPosts);
 router.get("/post/:postId", singlePost);
