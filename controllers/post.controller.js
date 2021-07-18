@@ -6,11 +6,12 @@ const _ = require("lodash");
 // function to get all the posts
 const getPosts = async (req, res) => {
   try {
-    const posts = await Post.find()
+    let posts = await Post.find()
       .populate("postedBy", "_id name")
       .populate("comments", "text created")
       .populate("comments.commentBy", "_id name")
       .select("_id post postphoto comments createdAt likes");
+
     res.json({
       success: true,
       posts,
@@ -36,6 +37,8 @@ const postById = async (req, res, next, id) => {
         message: "no such post found",
       });
     }
+    // console.log("this is post", post);
+
     req.post = post;
     next();
   } catch (err) {
@@ -50,6 +53,9 @@ const postById = async (req, res, next, id) => {
 const singlePost = async (req, res) => {
   try {
     const post = req.post;
+    if (post.postphoto.data) {
+      post.postphoto = { data: [125] };
+    }
     res.status(200).json({
       success: true,
       post,
@@ -238,6 +244,9 @@ const like = async (req, res) => {
       { $push: { likes: req.body.userId } },
       { new: true }
     ).populate("postedBy", "_id name");
+    if (post.postphoto.data) {
+      post.postphoto = { data: [125] };
+    }
     res.json({
       success: true,
       post,
@@ -257,6 +266,9 @@ const unlike = async (req, res) => {
       { $pull: { likes: req.body.userId } },
       { new: true }
     ).populate("postedBy", "_id name");
+    if (post.postphoto.data) {
+      post.postphoto = { data: [125] };
+    }
     res.json({
       success: true,
       post,
