@@ -5,24 +5,39 @@ const _ = require("lodash");
 
 // function to get all the posts
 const getPosts = async (req, res) => {
-  try {
-    let posts = await Post.find()
-      .populate("postedBy", "_id name")
-      .populate("comments", "text created")
-      .populate("comments.commentBy", "_id name")
-      .select("_id post postphoto comments createdAt likes");
+  // get current page from req.query or use default value of 1
+  const currentPage = req.query.page || 1;
+  // return 3 posts per page
+  const perPage = 5;
+  let totalItems;
 
-    res.json({
-      success: true,
-      posts,
-    });
-  } catch (err) {
+  try {
+    const posts = await Post.find()
+      // countDocuments() gives you total count of posts
+      .countDocuments()
+      .then(count => {
+          totalItems = count;
+          return Post.find()
+              .sort({ _id: -1 })
+              .skip((currentPage - 1) * perPage)
+              .populate("postedBy", "_id name")
+              .populate("comments", "text created")
+              .populate("comments.commentBy", "_id name")
+              .limit(perPage)
+              .select("_id post postphoto comments createdAt likes");
+      });
+      res.status(200).json({
+        success: true,
+        posts
+      });
+  } catch (error) {
     res.status(500).json({
-      success: false,
-      message: "could not retrieve data",
-      errorMessage: err.message,
-    });
+          success: false,
+          message: "could not retrieve data",
+          errorMessage: error.message,
+        });
   }
+
 };
 // gets post by id
 const postById = async (req, res, next, id) => {
